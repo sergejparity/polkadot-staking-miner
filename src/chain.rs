@@ -414,6 +414,106 @@ pub mod kusama {
 	}
 }
 
+pub mod kitchensink {
+	use super::*;
+
+	// SYNC
+	frame_election_provider_support::generate_solution_type!(
+		#[compact]
+		pub struct NposSolution16::<
+			VoterIndex = u32,
+			TargetIndex = u16,
+			Accuracy = sp_runtime::PerU16,
+			MaxVoters = ConstU32::<22500>
+		>(16)
+	);
+
+	#[derive(Debug)]
+	pub struct Config;
+	impl pallet_election_provider_multi_phase::unsigned::MinerConfig for Config {
+		type AccountId = AccountId;
+		type MaxLength = static_types::MaxLength;
+		type MaxWeight = static_types::MaxWeight;
+		type MaxVotesPerVoter = static_types::MaxVotesPerVoter;
+		type Solution = NposSolution16;
+
+		// SYNC
+		fn solution_weight(
+			voters: u32,
+			targets: u32,
+			active_voters: u32,
+			desired_targets: u32,
+		) -> Weight {
+			use _feps::NposSolution;
+			use pallet_election_provider_multi_phase::{RawSolution, SolutionOrSnapshotSize};
+
+			// Mock a RawSolution to get the correct weight without having to do the heavy work.
+			let raw = RawSolution {
+				solution: NposSolution16 {
+					votes1: mock_votes(
+						active_voters,
+						desired_targets.try_into().expect("Desired targets < u16::MAX"),
+					),
+					..Default::default()
+				},
+				..Default::default()
+			};
+
+			assert_eq!(raw.solution.voter_count(), active_voters as usize);
+			assert_eq!(raw.solution.unique_targets().len(), desired_targets as usize);
+
+			let tx = runtime::tx()
+				.election_provider_multi_phase()
+				.submit_unsigned(raw, SolutionOrSnapshotSize { voters, targets });
+
+			get_weight(tx)
+		}
+	}
+
+	#[subxt::subxt(
+		runtime_metadata_path = "artifacts/substrate.scale",
+		derive_for_all_types = "Clone, Debug, Eq, PartialEq",
+		derive_for_type(
+			type = "pallet_election_provider_multi_phase::RoundSnapshot",
+			derive = "Default"
+		)
+	)]
+	pub mod runtime {
+		#[subxt(substitute_type = "kitchensink_runtime::NposSolution16")]
+		use crate::chain::kitchensink::NposSolution16;
+
+		#[subxt(substitute_type = "sp_arithmetic::per_things::PerU16")]
+		use ::sp_runtime::PerU16;
+
+		#[subxt(substitute_type = "pallet_election_provider_multi_phase::RawSolution")]
+		use ::pallet_election_provider_multi_phase::RawSolution;
+
+		#[subxt(substitute_type = "sp_npos_elections::ElectionScore")]
+		use ::sp_npos_elections::ElectionScore;
+
+		#[subxt(substitute_type = "pallet_election_provider_multi_phase::Phase")]
+		use ::pallet_election_provider_multi_phase::Phase;
+
+		#[subxt(
+			substitute_type = "pallet_election_provider_multi_phase::SolutionOrSnapshotSize"
+		)]
+		use ::pallet_election_provider_multi_phase::SolutionOrSnapshotSize;
+	}
+
+	pub use runtime::runtime_types;
+
+	pub mod epm {
+		use super::*;
+		pub type BoundedVoters =
+			Vec<(AccountId, VoteWeight, BoundedVec<AccountId, static_types::MaxVotesPerVoter>)>;
+		pub type Snapshot = (BoundedVoters, Vec<AccountId>, u32);
+		pub use super::{
+			runtime::election_provider_multi_phase::*,
+			runtime_types::pallet_election_provider_multi_phase::*,
+		};
+	}
+}
+
 /// Helper to fetch the weight from a remote node
 ///
 /// Panics: if the RPC call fails or if decoding the response as a `Weight` fails.
@@ -454,7 +554,6 @@ fn get_weight<T: Encode>(tx: subxt::tx::StaticTxPayload<T>) -> Weight {
 		info.weight
 	})
 }
-
 fn mock_votes(voters: u32, desired_targets: u16) -> Vec<(u32, u16)> {
 	assert!(voters >= desired_targets as u32);
 	(0..voters).zip((0..desired_targets).cycle()).collect()

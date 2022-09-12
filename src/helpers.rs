@@ -122,7 +122,7 @@ macro_rules! helpers_for_runtime {
 				use crate::chain::[<$runtime>]::runtime;
 
 				// maximum weight of the signed submission is exposed from metadata and MUST be this.
-				let max_weight = api.constants().at(&runtime::constants().election_provider_multi_phase().signed_max_weight()).expect("constant `max weight` must exist");
+				let max_weight = api.constants().at(&runtime::constants().election_provider_multi_phase().signed_max_weight()).expect("constant `max weight` must exist").ref_time;
 
 				// allow up to 75% of the block size to be used for signed submission, length-wise. This
 				// value can be adjusted a bit if needed.
@@ -147,6 +147,7 @@ macro_rules! helpers_for_runtime {
 	};
 }
 
-helpers_for_runtime!(polkadot);
+/*helpers_for_runtime!(polkadot);
 helpers_for_runtime!(kusama);
-helpers_for_runtime!(westend);
+helpers_for_runtime!(westend);*/
+helpers_for_runtime!(kitchensink);

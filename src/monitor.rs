@@ -239,7 +239,7 @@ macro_rules! monitor_cmd_for {
 						.fetch_or_default(&addr, Some(at))
 						.await?;
 
-					for (_score, idx) in indices.0 {
+					for (_score, idx, _) in indices.0 {
 						let addr = runtime::storage().election_provider_multi_phase().signed_submissions_map(&idx);
 
 						let submission = api
@@ -278,7 +278,7 @@ macro_rules! monitor_cmd_for {
 
 					log::debug!(target: LOG_TARGET, "submitted solutions: {:?}", indices.0);
 
-					for (other_score, _) in indices.0 {
+					for (other_score, _, _) in indices.0 {
 						if !score.strict_threshold_better(other_score, epsilon) {
 							return Err(Error::BetterScoreExist);
 						}
@@ -351,9 +351,10 @@ macro_rules! monitor_cmd_for {
 	}
 }
 
-monitor_cmd_for!(polkadot);
+/*monitor_cmd_for!(polkadot);
 monitor_cmd_for!(kusama);
-monitor_cmd_for!(westend);
+monitor_cmd_for!(westend);*/
+monitor_cmd_for!(kitchensink);
 
 fn kill_main_task_if_critical_err(tx: &tokio::sync::mpsc::UnboundedSender<Error>, err: Error) {
 	use jsonrpsee::{core::Error as RpcError, types::error::CallError};

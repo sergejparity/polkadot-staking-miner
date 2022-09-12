@@ -80,6 +80,7 @@ macro_rules! dry_run_cmd_for {
 	};
 }
 
-dry_run_cmd_for!(polkadot);
+/*dry_run_cmd_for!(polkadot);
 dry_run_cmd_for!(kusama);
-dry_run_cmd_for!(westend);
+dry_run_cmd_for!(westend);*/
+dry_run_cmd_for!(kitchensink);

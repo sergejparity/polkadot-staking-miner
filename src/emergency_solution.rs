@@ -31,6 +31,7 @@ macro_rules! emergency_cmd_for {
 	};
 }
 
-emergency_cmd_for!(polkadot);
+/*emergency_cmd_for!(polkadot);
 emergency_cmd_for!(kusama);
-emergency_cmd_for!(westend);
+emergency_cmd_for!(westend);*/
+emergency_cmd_for!(kitchensink);

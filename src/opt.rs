@@ -33,7 +33,7 @@ pub enum Solver {
 macro_rules! any_runtime {
 	($chain:tt, $($code:tt)*) => {
 		match $chain {
-			Chain::Polkadot => {
+			/*Chain::Polkadot => {
 				#[allow(unused)]
 				use {$crate::monitor::run_polkadot as monitor_cmd, $crate::dry_run::run_polkadot as dry_run_cmd, $crate::emergency_solution::run_polkadot as emergency_cmd, $crate::helpers::update_runtime_constants_polkadot as tls_update_runtime_constants, $crate::chain::polkadot::runtime};
 				$($code)*
@@ -47,7 +47,13 @@ macro_rules! any_runtime {
 				#[allow(unused)]
 				use {$crate::monitor::run_westend as monitor_cmd, $crate::dry_run::run_westend as dry_run_cmd, $crate::emergency_solution::run_westend as emergency_cmd, $crate::helpers::update_runtime_constants_westend as tls_update_runtime_constants, $crate::chain::westend::runtime};
 				$($code)*
+			}*/
+			Chain::Substrate => {
+				#[allow(unused)]
+				use {$crate::monitor::run_kitchensink as monitor_cmd, $crate::dry_run::run_kitchensink as dry_run_cmd, $crate::emergency_solution::run_kitchensink as emergency_cmd, $crate::helpers::update_runtime_constants_kitchensink as tls_update_runtime_constants, $crate::chain::kitchensink::runtime};
+				$($code)*
 			}
+			e @ _ => panic!("chain: {:?} disabled", e),
 		}
 	}
 }
@@ -104,6 +110,7 @@ pub enum Chain {
 	Westend,
 	Kusama,
 	Polkadot,
+	Substrate,
 }
 
 /// The type of event to listen to.
@@ -127,6 +134,7 @@ impl fmt::Display for Chain {
 			Self::Polkadot => "polkadot",
 			Self::Kusama => "kusama",
 			Self::Westend => "westend",
+			Self::Substrate => "substrate",
 		};
 		write!(f, "{}", chain)
 	}
@@ -140,6 +148,7 @@ impl std::str::FromStr for Chain {
 			"polkadot" => Ok(Self::Polkadot),
 			"kusama" => Ok(Self::Kusama),
 			"westend" => Ok(Self::Westend),
+			"node" => Ok(Self::Substrate),
 			chain => Err(Error::Other(format!(
 				"expected chain to be polkadot, kusama or westend; got: {}",
 				chain
