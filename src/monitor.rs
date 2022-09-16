@@ -114,7 +114,7 @@ macro_rules! monitor_cmd_for {
 						return;
 					}
 
-					let round = match api.storage().fetch(&runtime::storage().election_provider_multi_phase().round(), Some(hash)).await {
+					let round = match api.storage().fetch(&runtime::storage().multi_phase().round(), Some(hash)).await {
 						Ok(Some(round)) => round,
 						// Default round is 1
 						// https://github.com/paritytech/substrate/blob/49b06901eb65f2c61ff0934d66987fd955d5b8f5/frame/election-provider-multi-phase/src/lib.rs#L1188
@@ -212,7 +212,8 @@ macro_rules! monitor_cmd_for {
 				async fn ensure_signed_phase(api: &SubxtClient, hash: Hash) -> Result<(), Error> {
 					use pallet_election_provider_multi_phase::Phase;
 
-					let addr = chain::runtime::storage().election_provider_multi_phase().current_phase();
+
+					let addr = chain::runtime::storage().multi_phase().current_phase();
 					let res = api.storage().fetch(&addr, Some(hash)).await;
 
 					match res {
@@ -232,14 +233,14 @@ macro_rules! monitor_cmd_for {
 					us: &AccountId,
 				) -> Result<(), Error> {
 
-					let addr = chain::runtime::storage().election_provider_multi_phase().signed_submission_indices();
+					let addr = chain::runtime::storage().multi_phase().signed_submission_indices();
 					let indices = api
 						.storage()
 						.fetch_or_default(&addr, Some(at))
 						.await?;
 
 					for (_score, idx) in indices.0 {
-						let addr = runtime::storage().election_provider_multi_phase().signed_submissions_map(&idx);
+						let addr = runtime::storage().multi_phase().signed_submissions_map(&idx);
 
 						let submission = api
 							.storage()
@@ -269,7 +270,7 @@ macro_rules! monitor_cmd_for {
 						SubmissionStrategy::ClaimBetterThan(epsilon) => epsilon,
 					};
 
-					let addr = runtime::storage().election_provider_multi_phase().signed_submission_indices();
+					let addr = runtime::storage().multi_phase().signed_submission_indices();
 					let indices = api
 						.storage()
 						.fetch_or_default(&addr, Some(at))
@@ -293,7 +294,7 @@ macro_rules! monitor_cmd_for {
 					hash: Hash
 				) -> Result<(), Error> {
 
-					let tx = runtime::tx().election_provider_multi_phase().submit(RawSolution { solution, score, round });
+					let tx = runtime::tx().multi_phase().submit(RawSolution { solution, score, round });
 
 					let mut status_sub = api.tx().sign_and_submit_then_watch_default(&tx, &*signer).await.map_err(|e| {
 						log::warn!(target: LOG_TARGET, "submit solution failed: {:?}", e);

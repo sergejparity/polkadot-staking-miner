@@ -52,12 +52,7 @@ async fn test_submit_solution(chain: Chain) {
 
 		let mut success = false;
 
-		let key = Bytes(
-			runtime::storage()
-				.election_provider_multi_phase()
-				.queued_solution()
-				.to_root_bytes(),
-		);
+		let key = Bytes(runtime::storage().multi_phase().queued_solution().to_root_bytes());
 
 		let mut sub = api
 			.rpc()

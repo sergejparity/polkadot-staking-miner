@@ -42,7 +42,7 @@ macro_rules! dry_run_cmd_for {
 					crate::helpers::[<mine_solution_$runtime>](&api, config.at, config.solver).await?;
 
 				let round = api.storage().fetch(
-					&runtime::storage().election_provider_multi_phase().round(),
+					&runtime::storage().multi_phase().round(),
 					config.at
 				)
 				.await?
@@ -59,7 +59,7 @@ macro_rules! dry_run_cmd_for {
 					raw_solution.encode().len(),
 				);
 
-				let tx = runtime::tx().election_provider_multi_phase().submit(raw_solution);
+				let tx = runtime::tx().multi_phase().submit(raw_solution);
 				let xt = api.tx().create_signed(&tx, &*signer, ExtrinsicParams::default()).await?;
 
 				let outcome = api

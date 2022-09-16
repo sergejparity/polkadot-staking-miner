@@ -164,7 +164,7 @@ pub mod westend {
 			assert_eq!(raw.solution.unique_targets().len(), desired_targets as usize);
 
 			let tx = runtime::tx()
-				.election_provider_multi_phase()
+				.multi_phase()
 				.submit_unsigned(raw, SolutionOrSnapshotSize { voters, targets });
 
 			get_weight(tx)
@@ -265,7 +265,7 @@ pub mod polkadot {
 			assert_eq!(raw.solution.unique_targets().len(), desired_targets as usize);
 
 			let tx = runtime::tx()
-				.election_provider_multi_phase()
+				.multi_phase()
 				.submit_unsigned(raw, SolutionOrSnapshotSize { voters, targets });
 
 			get_weight(tx)
@@ -281,7 +281,7 @@ pub mod polkadot {
 		)
 	)]
 	pub mod runtime {
-		#[subxt(substitute_type = "polkadot_runtime::NposCompactSolution16")]
+		#[subxt(substitute_type = "node_template_runtime::solution_16::NposSolution16")]
 		use crate::chain::polkadot::NposSolution16;
 
 		#[subxt(substitute_type = "sp_arithmetic::per_things::PerU16")]
@@ -309,10 +309,10 @@ pub mod polkadot {
 		pub type BoundedVoters =
 			Vec<(AccountId, VoteWeight, BoundedVec<AccountId, static_types::MaxVotesPerVoter>)>;
 		pub type Snapshot = (BoundedVoters, Vec<AccountId>, u32);
-		pub use super::{
-			runtime::election_provider_multi_phase::*,
-			runtime_types::pallet_election_provider_multi_phase::*,
-		};
+		pub use runtime::multi_phase::*;
+		pub use runtime_types::pallet_election_provider_multi_phase::*;
+
+		pub use runtime_types::node_template_runtime::solution_16::NposSolution16 as F;
 	}
 }
 
@@ -366,7 +366,7 @@ pub mod kusama {
 			assert_eq!(raw.solution.unique_targets().len(), desired_targets as usize);
 
 			let tx = runtime::tx()
-				.election_provider_multi_phase()
+				.multi_phase()
 				.submit_unsigned(raw, SolutionOrSnapshotSize { voters, targets });
 
 			get_weight(tx)

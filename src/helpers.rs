@@ -93,13 +93,13 @@ macro_rules! helpers_for_runtime {
 				use crate::chain::static_types;
 
 				let RoundSnapshot { voters, targets } = api
-					.storage().fetch(&runtime::storage().election_provider_multi_phase().snapshot(), hash)
+					.storage().fetch(&runtime::storage().multi_phase().snapshot(), hash)
 					.await?
 					.unwrap_or_default();
 
 				let desired_targets = api
 					.storage()
-					.fetch(&runtime::storage().election_provider_multi_phase().desired_targets(), hash)
+					.fetch(&runtime::storage().multi_phase().desired_targets(), hash)
 					.await?
 					.unwrap_or_default();
 
@@ -122,7 +122,7 @@ macro_rules! helpers_for_runtime {
 				use crate::chain::[<$runtime>]::runtime;
 
 				// maximum weight of the signed submission is exposed from metadata and MUST be this.
-				let max_weight = api.constants().at(&runtime::constants().election_provider_multi_phase().signed_max_weight()).expect("constant `max weight` must exist").ref_time;
+				let max_weight = api.constants().at(&runtime::constants().multi_phase().signed_max_weight()).expect("constant `max weight` must exist").ref_time;
 
 				// allow up to 75% of the block size to be used for signed submission, length-wise. This
 				// value can be adjusted a bit if needed.
