@@ -67,7 +67,7 @@ pub(crate) async fn update_metadata_constants(api: &SubxtClient) -> Result<(), E
 	const SIGNED_MAX_WEIGHT: EpmConstant = EpmConstant::new("SignedMaxWeight");
 	const MAX_LENGTH: EpmConstant = EpmConstant::new("MinerMaxLength");
 	const MAX_VOTES_PER_VOTER: EpmConstant = EpmConstant::new("MinerMaxVotesPerVoter");
-	const MAX_WINNERS: EpmConstant = EpmConstant::new("MinerMaxWinners");
+	//const MAX_WINNERS: EpmConstant = EpmConstant::new("MinerMaxWinners");
 
 	fn log_metadata(metadata: EpmConstant, val: impl std::fmt::Display) {
 		log::trace!(target: LOG_TARGET, "updating metadata constant `{metadata}`: {val}",);
@@ -76,17 +76,17 @@ pub(crate) async fn update_metadata_constants(api: &SubxtClient) -> Result<(), E
 	let max_weight = read_constant::<Weight>(api, SIGNED_MAX_WEIGHT)?;
 	let max_length: u32 = read_constant(api, MAX_LENGTH)?;
 	let max_votes_per_voter: u32 = read_constant(api, MAX_VOTES_PER_VOTER)?;
-	let max_winners: u32 = read_constant(api, MAX_WINNERS)?;
+	//let max_winners: u32 = read_constant(api, MAX_WINNERS)?;
 
 	log_metadata(SIGNED_MAX_WEIGHT, max_weight);
 	log_metadata(MAX_LENGTH, max_length);
 	log_metadata(MAX_VOTES_PER_VOTER, max_votes_per_voter);
-	log_metadata(MAX_WINNERS, max_winners);
+	//log_metadata(MAX_WINNERS, max_winners);
 
 	static_types::MaxWeight::set(max_weight);
 	static_types::MaxLength::set(max_length);
 	static_types::MaxVotesPerVoter::set(max_votes_per_voter);
-	static_types::MaxWinners::set(max_winners);
+	//static_types::MaxWinners::set(max_winners);
 
 	Ok(())
 }
