@@ -1,0 +1,167 @@
+name: Staking Miner CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+
+env:
+  IMAGE: paritytech/ci-unified:bullseye-1.73.0
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  set-image:
+    # GitHub Actions does not allow using 'env' in a container context.
+    # This workaround sets the container image for each job using 'set-image' job output.
+    runs-on: ubuntu-latest
+    outputs:
+      IMAGE: ${{ steps.set_image.outputs.IMAGE }}
+    steps:
+      - id: set_image
+        run: echo "IMAGE=${{ env.IMAGE }}" >> $GITHUB_OUTPUT
+
+  check:
+    runs-on: ubuntu-latest
+    needs: [set-image]
+    container: ${{ needs.set-image.outputs.IMAGE }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Rust dependencies
+        uses: swatinem/rust-cache@v2
+        with:
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Display Rust and Docker info
+        run: |
+          rustup show
+          cargo --version
+          rustup +nightly show
+          cargo +nightly --version
+
+      - name: Check formatting
+        run: cargo +nightly fmt --all -- --check
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets
+
+      - name: Check documentation
+        run: RUSTDOCFLAGS="--cfg docsrs --deny rustdoc::broken_intra_doc_links" cargo doc --verbose --workspace --no-deps --document-private-items --all-features
+
+      - name: Check code using cargo-hack
+        run: |
+          cargo install cargo-hack
+          cargo hack check --workspace --each-feature --all-targets
+
+      - name: Check staking-miner-playground
+        run: |
+          rustup target add wasm32-unknown-unknown --toolchain nightly
+          cargo +nightly install wasm-gc
+          cargo +nightly check --manifest-path staking-miner-playground/Cargo.toml
+
+  test:
+    runs-on: ubuntu-latest
+    needs: [set-image]
+    container: ${{ needs.set-image.outputs.IMAGE }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Rust dependencies
+        uses: swatinem/rust-cache@v2
+        with:
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Display Rust and Docker info
+        run: |
+          rustup show
+          cargo --version
+          rustup +nightly show
+          cargo +nightly --version
+
+      - name: Run tests on Ubuntu
+        run: RUST_LOG=info cargo test --workspace -- --nocapture
+
+
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [set-image]
+    container: ${{ needs.set-image.outputs.IMAGE }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Rust dependencies
+        uses: swatinem/rust-cache@v2
+        with:
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Display Rust and Docker info
+        run: |
+          rustup show
+          cargo --version
+          rustup +nightly show
+          cargo +nightly --version
+
+      - name: Build staking-miner
+        run: cargo build --release --locked
+
+      - name: Collect artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            ./target/release/staking-miner
+            ./Dockerfile
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./artifacts
+
+      - name: Set up Docker tags
+        run: |
+          export IMAGE_NAME="sergejparity/staking-miner-v2"
+          export IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA}"; else echo "$GITHUB_REF"; fi)
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build/Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          context: ./artifacts
+          file: ./artifacts/Dockerfile
+          build-args: |
+            VCS_REF="${{ github.sha }}"
+            BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.IMAGE_NAME }}:latest
+
