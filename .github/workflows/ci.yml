@@ -141,7 +141,7 @@ jobs:
       - name: Set up Docker tags
         run: |
           echo IMAGE_NAME="sergejparity/staking-miner-v2" >> $GITHUB_ENV
-          echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
+          echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
