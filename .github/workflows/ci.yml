@@ -147,7 +147,7 @@ jobs:
 
       - name: Prepare Docker environment
         run: |
-          if [[ ${{ github.ref }} == 'refs/heads/main' ]] || [[ ${{ github.ref_type }} == 'tag' }} ]]
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]] || [[ ${{ github.ref_type }} == 'tag' ]]
             then
               echo "We are in then! And github ref is $GITHUB_REF and github ref name is $GITHUB_REF_NAME and github ref type is $GITHUB_REF_TYPE"
               echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
