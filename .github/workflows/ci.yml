@@ -146,7 +146,7 @@ jobs:
 
       - name: Prepare Docker environment
         run: |
-          echo ${[[ ${{ (github.ref == 'refs/heads/main') || (github.ref == 'tag') }} ]]}
+          echo $([[ ${{ (github.ref == 'refs/heads/main') || (github.ref == 'tag') }} ]])
           echo "-----"
           echo IMAGE_NAME="sergejparity/staking-miner-v2" >> $GITHUB_ENV
           echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
