@@ -142,7 +142,9 @@ jobs:
           path: ./artifacts
 
       - name: Debug
-        run: ls -la ./artifacts
+        run: |
+          ls -la ./artifacts
+          ls -la ./artifacts/target
 
       - name: Set up Docker tags
         run: |
