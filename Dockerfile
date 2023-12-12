@@ -39,4 +39,4 @@ ENV RUST_LOG="info"
 # check if the binary works in this container
 RUN /usr/local/bin/polkadot-staking-miner --version
 
-ENTRYPOINT [ "/usr/local/bin/staking-miner" ]
+ENTRYPOINT [ "/usr/local/bin/polkadot-staking-miner" ]
