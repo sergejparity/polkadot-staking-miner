@@ -149,12 +149,12 @@ jobs:
         run: |
           if [[ ${{ (github.ref == 'refs/heads/main') || (github.ref_type == 'tag') }} ]]
             then
-              echo "We are in then!"
+              echo "We are in then! And github ref is $GITHUB_REF and github ref name is $GITHUB_REF_NAME and github ref type is $GITHUB_REF_TYPE"
               echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
               echo PUSH_IMAGE=true >> $GITHUB_ENV
               echo "Docker image will be published with the tag: ${{ env.IMAGE_TAG }}!"
             else
-              echo "We are in else!"
+              echo "We are in else! And github ref is $GITHUB_REF and github ref name is $GITHUB_REF_NAME and github ref type is $GITHUB_REF_TYPE"
               echo IMAGE_TAG=stub_tag >> $GITHUB_ENV
               echo PUSH_IMAGE=false >> $GITHUB_ENV
               echo "Docker image will not be published. Just testing if the build works."
