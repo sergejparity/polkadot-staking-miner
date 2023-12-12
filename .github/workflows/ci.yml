@@ -129,6 +129,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/tags/v*'
     needs: [build]
 
     steps:
@@ -144,7 +145,7 @@ jobs:
       - name: Set up Docker tags
         run: |
           echo IMAGE_NAME="sergejparity/staking-miner-v2" >> $GITHUB_ENV
-          echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "TEST"; fi) >> $GITHUB_ENV
+          echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
           echo $IMAGE_TAG
           chmod +x ./artifacts/polkadot-staking-miner
 
