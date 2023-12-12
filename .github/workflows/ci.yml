@@ -13,6 +13,7 @@ on:
 
 env:
   IMAGE: paritytech/ci-unified:bullseye-1.74.0
+  PUSH_IMAGE: false
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -131,7 +132,6 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: ${{ (github.ref == 'refs/heads/main') || (github.ref == 'refs/tags/v*') }}
     needs: [build]
 
     steps:
@@ -144,10 +144,12 @@ jobs:
           name: build-artifacts
           path: ./artifacts
 
-      - name: Set up Docker tags
+      - name: Prepare Docker environment
         run: |
+          [[ ${{ (github.ref == 'refs/heads/main') || (github.ref == 'tag') }} ]]
           echo IMAGE_NAME="sergejparity/staking-miner-v2" >> $GITHUB_ENV
           echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
+          echo PUSH_IMAGE=$(if [ "$GITHUB_REF" == "refs/heads/main" || "$GITHUB_REF" == "tag"]; then echo "true"; fi) >> $GITHUB_ENV
           echo $IMAGE_TAG
           chmod +x ./artifacts/polkadot-staking-miner
 
