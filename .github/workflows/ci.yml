@@ -146,6 +146,8 @@ jobs:
           echo IMAGE_NAME="sergejparity/staking-miner-v2" >> $GITHUB_ENV
           echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "TEST"; fi) >> $GITHUB_ENV
           echo $IMAGE_TAG
+          chmod +x ./artifacts/polkadot-staking-miner
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
