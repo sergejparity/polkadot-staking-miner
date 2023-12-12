@@ -141,11 +141,6 @@ jobs:
           name: build-artifacts
           path: ./artifacts
 
-      - name: Debug
-        run: |
-          ls -la ./artifacts
-          ls -la ./artifacts/target
-
       - name: Set up Docker tags
         run: |
           echo IMAGE_NAME="sergejparity/staking-miner-v2" >> $GITHUB_ENV
@@ -172,4 +167,3 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             ${{ env.IMAGE_NAME }}:latest
-
