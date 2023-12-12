@@ -165,7 +165,7 @@ jobs:
       - name: Build/Push Docker image
         uses: docker/build-push-action@v5
         with:
-          push: true
+          push: ${{ env.PUSH_IMAGE }}
           context: ./artifacts
           file: ./artifacts/Dockerfile
           build-args: |
