@@ -131,7 +131,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/tags/v*' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref_name == 'v*' }}
     needs: [build]
 
     steps:
