@@ -116,15 +116,15 @@ jobs:
       - name: Build staking-miner
         run: cargo build --release --locked
 
-      - name: Debug
-        run: ls -la ./target/release
+      - name: Move polkadot-staking-miner binary
+        run: mv ./target/release/polkadot-staking-miner .
 
       - name: Collect artifacts
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts
           path: |
-            ./target/release/polkadot-staking-miner
+            ./polkadot-staking-miner
             ./Dockerfile
 
   publish:
