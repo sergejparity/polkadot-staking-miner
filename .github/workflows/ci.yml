@@ -10,13 +10,14 @@ on:
     branches:
       - main
 
-
 env:
   IMAGE: paritytech/ci-unified:bullseye-1.74.0
-  PUSH_IMAGE: false
+  IMAGE_NAME: sergejparity/staking-miner-v2
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
 jobs:
   set-image:
     # GitHub Actions does not allow using 'env' in a container context.
@@ -146,11 +147,18 @@ jobs:
 
       - name: Prepare Docker environment
         run: |
-          [[ ${{ (github.ref == 'refs/heads/main') || (github.ref == 'tag') }} ]]
-          echo IMAGE_NAME="sergejparity/staking-miner-v2" >> $GITHUB_ENV
-          echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
-          echo PUSH_IMAGE=$(if [ "$GITHUB_REF" == "refs/heads/main" || "$GITHUB_REF" == "tag"]; then echo "true"; else echo "false"; fi) >> $GITHUB_ENV
-          echo $IMAGE_TAG
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]] || [[ ${{ github.ref_type }} == 'tag' ]]
+            then
+              echo "We are in then! And github ref is $GITHUB_REF and github ref name is $GITHUB_REF_NAME and github ref type is $GITHUB_REF_TYPE"
+              echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
+              echo PUSH_IMAGE=true >> $GITHUB_ENV
+              echo "Docker image will be published with the tag: ${{ env.IMAGE_TAG }}!"
+            else
+              echo "We are in else! And github ref is $GITHUB_REF and github ref name is $GITHUB_REF_NAME and github ref type is $GITHUB_REF_TYPE"
+              echo IMAGE_TAG=stub_tag >> $GITHUB_ENV
+              echo PUSH_IMAGE=false >> $GITHUB_ENV
+              echo "Docker image will not be published. Just testing if the build works."
+          fi
           chmod +x ./artifacts/polkadot-staking-miner
 
       - name: Log in to Docker Hub
@@ -174,3 +182,5 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             ${{ env.IMAGE_NAME }}:latest
+
+      
