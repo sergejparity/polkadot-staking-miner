@@ -28,7 +28,7 @@ RUN apt-get update && \
     useradd -u 10000 -U -s /bin/sh miner
 
 # add binary to docker image
-COPY ./staking-miner /usr/local/bin
+COPY ./polkadot-staking-miner /usr/local/bin
 
 USER miner
 
@@ -37,6 +37,6 @@ ENV URI="wss://rpc.polkadot.io"
 ENV RUST_LOG="info"
 
 # check if the binary works in this container
-RUN /usr/local/bin/staking-miner --version
+RUN /usr/local/bin/polkadot-staking-miner --version
 
 ENTRYPOINT [ "/usr/local/bin/staking-miner" ]

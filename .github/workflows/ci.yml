@@ -121,7 +121,7 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            ./target/release/staking-miner
+            ./target/release/polkadot-staking-miner
             ./Dockerfile
 
   publish:
