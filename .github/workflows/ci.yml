@@ -10,7 +10,7 @@ on:
 
 
 env:
-  IMAGE: paritytech/ci-unified:bullseye-1.73.0
+  IMAGE: paritytech/ci-unified:bullseye-1.74.0
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -140,9 +140,8 @@ jobs:
 
       - name: Set up Docker tags
         run: |
-          export IMAGE_NAME="sergejparity/staking-miner-v2"
-          export IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA}"; else echo "$GITHUB_REF"; fi)
-
+          echo IMAGE_NAME="sergejparity/staking-miner-v2" >> $GITHUB_ENV
+          echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA}"; else echo "$GITHUB_REF"; fi) >> $GITHUB_ENV
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -162,6 +161,6 @@ jobs:
             VCS_REF="${{ github.sha }}"
             BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           tags: |
-            ${IMAGE_NAME}:${IMAGE_TAG}
-            ${IMAGE_NAME}:latest
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ${{ env.IMAGE_NAME }}:latest
 
