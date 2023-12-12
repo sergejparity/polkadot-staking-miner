@@ -149,7 +149,7 @@ jobs:
           [[ ${{ (github.ref == 'refs/heads/main') || (github.ref == 'tag') }} ]]
           echo IMAGE_NAME="sergejparity/staking-miner-v2" >> $GITHUB_ENV
           echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
-          echo PUSH_IMAGE=$(if [ "$GITHUB_REF" == "refs/heads/main" || "$GITHUB_REF" == "tag"]; then echo "true"; fi) >> $GITHUB_ENV
+          echo PUSH_IMAGE=$(if [ "$GITHUB_REF" == "refs/heads/main" || "$GITHUB_REF" == "tag"]; then echo "true"; else echo "false"; fi) >> $GITHUB_ENV
           echo $IMAGE_TAG
           chmod +x ./artifacts/polkadot-staking-miner
 
