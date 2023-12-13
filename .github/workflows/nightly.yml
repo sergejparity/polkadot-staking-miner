@@ -14,6 +14,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Free space on the runner
+        run: |
+          df -h
+          sudo apt -y autoremove --purge
+          sudo apt -y autoclean
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h
+
       - name: Cache Rust dependencies
         uses: swatinem/rust-cache@v2
         with:
