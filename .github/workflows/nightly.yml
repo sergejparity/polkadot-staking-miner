@@ -50,18 +50,11 @@ jobs:
           RUST_LOG=info cargo test --workspace --all-features -- --nocapture
           cargo clean
 
-  create-an-issue:
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Create an issue
+      - name: create_an_issue
+        if: failure()
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLAB_PIPELINE_URL: ${{ inputs.gitlab_pipeline }}
         with:
           # Use this issue template:
           filename: .github/issue_templates/nightly_run_failed.md
@@ -72,5 +65,5 @@ jobs:
           # create a new one if we only find closed versions):
           search_existing: open
 
-      # - name: Fail workflow if tests failed
-      #   run: exit 1
+        # - name: Fail workflow if tests failed
+        #   run: exit 1
