@@ -179,7 +179,13 @@ jobs:
   publish:
     name: Build/publish Docker image
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [check-fmt,
+            check-clippy,
+            check-docs,
+            check-cargo-hack,
+            check-staking-miner-playground,
+            test,
+            build]
 
     steps:
       - name: Checkout repository
