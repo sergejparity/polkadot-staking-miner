@@ -32,6 +32,7 @@ jobs:
 
       - name: Run nightly tests
         run: |
+          sudo apt install -y protobuf
           git clone -b master --depth 1 https://github.com/paritytech/polkadot-sdk.git polkadot-sdk
           cd polkadot-sdk
           cargo build -p polkadot --release --features fast-runtime
