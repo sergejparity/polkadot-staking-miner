@@ -61,7 +61,6 @@ jobs:
 
       - name: Check code using cargo-hack
         run: |
-          cargo install cargo-hack
           cargo hack check --workspace --each-feature --all-targets
 
       - name: Check staking-miner-playground
@@ -182,5 +181,3 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             ${{ env.IMAGE_NAME }}:latest
-
-      
