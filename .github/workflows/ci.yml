@@ -13,6 +13,7 @@ on:
 env:
   IMAGE: paritytech/ci-unified:bullseye-1.74.0
   IMAGE_NAME: sergejparity/staking-miner-v2
+  RUST_INFO: rustup show && cargo --version && rustup +nightly show && cargo +nightly --version
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -45,10 +46,7 @@ jobs:
 
       - name: Display Rust and Docker info
         run: |
-          rustup show
-          cargo --version
-          rustup +nightly show
-          cargo +nightly --version
+          ${{ env.RUST_INFO }}
 
       - name: Check formatting
         run: cargo +nightly fmt --all -- --check
@@ -85,10 +83,7 @@ jobs:
 
       - name: Display Rust and Docker info
         run: |
-          rustup show
-          cargo --version
-          rustup +nightly show
-          cargo +nightly --version
+          ${{ env.RUST_INFO }}
 
       - name: Run tests on Ubuntu
         run: RUST_LOG=info cargo test --workspace -- --nocapture
@@ -111,10 +106,7 @@ jobs:
 
       - name: Display Rust and Docker info
         run: |
-          rustup show
-          cargo --version
-          rustup +nightly show
-          cargo +nightly --version
+          ${{ env.RUST_INFO }}
 
       - name: Build staking-miner
         run: cargo build --release --locked
