@@ -179,8 +179,9 @@ jobs:
   publish:
     name: Build/publish Docker image
     runs-on: ubuntu-latest
-    container: ${{ env.IMAGE }}
-    needs: [check-fmt,
+    container: ${{ needs.set-image.outputs.IMAGE }}
+    needs: [set-image,
+            check-fmt,
             check-clippy,
             check-docs,
             check-cargo-hack,
