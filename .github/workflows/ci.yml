@@ -11,7 +11,7 @@ on:
       - main
 
 env:
-  IMAGE: paritytech/ci-unified:bullseye-1.74.0-2023-11-01-v20231204
+  IMAGE: paritytech/ci-unified:bullseye-1.74.0
   IMAGE_NAME: sergejparity/staking-miner-v2
   RUST_INFO: rustup show && cargo --version && rustup +nightly show && cargo +nightly --version
 
