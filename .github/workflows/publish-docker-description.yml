@@ -21,4 +21,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           repository: 'sergejparity/staking-miner-v2'
           short-description: 'polkadot-staking-miner'
-          readme-filepath: 'scripts/ci/dockerfiles/Dockerfile.README.md'
+          readme-filepath: 'Dockerfile.README.md'
