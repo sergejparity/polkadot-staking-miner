@@ -1,4 +1,4 @@
-name: Staking Miner CI/CD
+name: Polkadot Staking Miner CI
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
 
 env:
   IMAGE: paritytech/ci-unified:bullseye-1.74.0-2023-11-01-v20231204
-  IMAGE_NAME: sergejparity/staking-miner-v2
+  IMAGE_NAME: sergejparity/polkadot-staking-miner
   RUST_INFO: rustup show && cargo --version && rustup +nightly show && cargo +nightly --version
 
 concurrency:
@@ -35,7 +35,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [set-image]
     container: ${{ needs.set-image.outputs.IMAGE }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -50,7 +49,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [set-image]
     container: ${{ needs.set-image.outputs.IMAGE }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -70,7 +68,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [set-image]
     container: ${{ needs.set-image.outputs.IMAGE }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -110,7 +107,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [set-image]
     container: ${{ needs.set-image.outputs.IMAGE }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -130,7 +126,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [set-image]
     container: ${{ needs.set-image.outputs.IMAGE }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -150,7 +145,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [set-image]
     container: ${{ needs.set-image.outputs.IMAGE }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -176,19 +170,54 @@ jobs:
             ./polkadot-staking-miner
             ./Dockerfile
 
-  publish:
+  build-docker-image:
     name: Build/publish Docker image
+    if: ${{ ! github.ref == 'refs/heads/main' || ! github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
-    container: ${{ needs.set-image.outputs.IMAGE }}
-    needs: [set-image,
-            check-fmt,
+    needs: [check-fmt,
             check-clippy,
             check-docs,
             check-cargo-hack,
             check-staking-miner-playground,
             test,
             build]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./artifacts
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build/Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          context: ./artifacts
+          file: ./artifacts/Dockerfile
+          build-args: |
+            VCS_REF="${{ github.sha }}"
+            BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          tags: |
+            ${{ env.IMAGE_NAME }}:test
+
+  publish-docker-image:
+    name: Build/publish Docker image
+    if: ${{ github.ref == 'refs/heads/main' ||  github.ref_type == 'tag' }}
+    runs-on: ubuntu-latest
+    environment: main_and_tags
+    needs: [check-fmt,
+            check-clippy,
+            check-docs,
+            check-cargo-hack,
+            check-staking-miner-playground,
+            test,
+            build]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -201,18 +230,13 @@ jobs:
 
       - name: Prepare Docker environment
         run: |
-          if [[ ${{ github.ref }} == 'refs/heads/main' ]] || [[ ${{ github.ref_type }} == 'tag' ]]; then
-            echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
-            echo PUSH_IMAGE=true >> $GITHUB_ENV
-            echo "Docker image will be published with the tag: ${{ env.IMAGE_TAG }}!"
-          else
-            echo IMAGE_TAG=stub_tag >> $GITHUB_ENV
-            echo PUSH_IMAGE=false >> $GITHUB_ENV
-            echo "Docker image will not be published. Just testing if the build works."
-          fi
+          echo IMAGE_TAG=$(if [ "$GITHUB_REF" == "refs/heads/main" ]; then echo "main-${GITHUB_SHA::7}"; else echo "$GITHUB_REF_NAME"; fi) >> $GITHUB_ENV
+          echo PUSH_IMAGE=true >> $GITHUB_ENV
+          echo "Docker image will be published with the tag: ${{ env.IMAGE_TAG }}!"
           chmod +x ./artifacts/polkadot-staking-miner
 
       - name: Log in to Docker Hub
+        if: ${{ github.ref == 'refs/heads/main' ||  github.ref_type == 'tag' }}
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -224,7 +248,7 @@ jobs:
       - name: Build/Push Docker image
         uses: docker/build-push-action@v5
         with:
-          push: ${{ env.PUSH_IMAGE }}
+          push: true
           context: ./artifacts
           file: ./artifacts/Dockerfile
           build-args: |

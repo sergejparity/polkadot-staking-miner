@@ -6,9 +6,9 @@ ARG BUILD_DATE
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
     io.parity.image.vendor="Parity Technologies" \
-    io.parity.image.title="staking-miner-v2" \
+    io.parity.image.title="polkadot-staking-miner" \
     io.parity.image.description="Staking Miner v2 for substrate based chains" \
-    io.parity.image.source="https://github.com/paritytech/staking-miner-v2/blob/${VCS_REF}/Dockerfile" \
+    io.parity.image.source="https://github.com/paritytech/polkadot-staking-miner/blob/${VCS_REF}/Dockerfile" \
     io.parity.image.revision="${VCS_REF}" \
     io.parity.image.created="${BUILD_DATE}" \
     io.parity.image.documentation="https://github.com/paritytech/polkadot/"
