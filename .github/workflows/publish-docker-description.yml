@@ -10,6 +10,7 @@ on:
 jobs:
   publish_docker_description:
     runs-on: ubuntu-latest
+    environment: main_and_tags
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,6 +20,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: 'sergejparity/staking-miner-v2'
-          short-description: 'polkadot-staking-miner'
+          repository: 'sergejparity/polkadot-staking-miner'
+          short-description: 'polkadot-staking-miner TEST IMAGE - DO NOT USE IN PRODUCTION'
           readme-filepath: 'Dockerfile.README.md'
