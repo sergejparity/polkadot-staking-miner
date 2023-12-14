@@ -33,6 +33,7 @@ jobs:
 
       - name: Run nightly tests
         run: |
+          asdfghjkl
           sudo apt install -y protobuf-compiler
           rustup target add wasm32-unknown-unknown
           rustup component add rust-src
