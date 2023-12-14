@@ -40,27 +40,27 @@ jobs:
           cd polkadot-sdk
           cargo build -p polkadot --release --features fast-runtime
           mkdir -p ~/.local/bin
-          mv ./target/release/polkadot /usr/bin
-          mv ./target/release/polkadot-execute-worker /usr/bin
-          mv ./target/release/polkadot-prepare-worker /usr/bin
+          sudo mv ./target/release/polkadot /usr/bin
+          sudo mv ./target/release/polkadot-execute-worker /usr/bin
+          sudo mv ./target/release/polkadot-prepare-worker /usr/bin
           polkadot --version
           cd -
           rm -rf polkadot
           cd staking-miner-playground
           cargo build --release --features test-trimming
-          mv ./target/release/staking-miner-playground /usr/bin
+          sudo mv ./target/release/staking-miner-playground /usr/bin
           staking-miner-playground --version
           cd -
           RUST_LOG=info cargo test --workspace --all-features -- --nocapture
           cargo clean
 
-      - name: create_an_issue
+      - name: Create an issue on failure
         if: failure()
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FAILED_WORKFLOW_URL: ${{ github.event.workflow_run.url }}
-          # https://github.com/{{ github.repository }}/commit/{{ github.sha }}/checks/{{ github.run_id }}
+          # FAILED_WORKFLOW_URL: ${{ github.event.workflow_run.url }}
+          FAILED_WORKFLOW_URL: https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks/${{ github.run_id }}
         with:
           # Use this issue template:
           filename: .github/issue_templates/nightly_run_failed.md
