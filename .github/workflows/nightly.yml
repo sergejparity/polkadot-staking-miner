@@ -33,6 +33,7 @@ jobs:
       - name: Run nightly tests
         run: |
           sudo apt install -y protobuf-compiler
+          rustup target add wasm32-unknown-unknown
           git clone -b master --depth 1 https://github.com/paritytech/polkadot-sdk.git polkadot-sdk
           cd polkadot-sdk
           cargo build -p polkadot --release --features fast-runtime
@@ -56,6 +57,8 @@ jobs:
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FAILED_WORKFLOW_URL: ${{ github.event.workflow_run.url }}
+          # https://github.com/{{ github.repository }}/commit/{{ github.sha }}/checks/{{ github.run_id }}
         with:
           # Use this issue template:
           filename: .github/issue_templates/nightly_run_failed.md
