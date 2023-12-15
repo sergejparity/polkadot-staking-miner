@@ -38,7 +38,7 @@ jobs:
         run: |
           cargo build -p polkadot --release --features fast-runtime
           ls -l
-          ls -l ./target/release/polkadot
+          ls -l ./target/release
           polkadot --version
 
       - name: upload polkadot binary
