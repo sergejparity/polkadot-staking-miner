@@ -1,0 +1,50 @@
+name: Build staking miner playground
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'staking-miner-playground/**'
+  # Allow it to be manually ran to rebuild binary when needed:
+  workflow_dispatch: {}
+  # Run at 22pm every week on Sunday's for nightly builds.
+  schedule:
+    - cron: "0 22 * * 6"
+
+jobs:
+  tests:
+    name: Build staking-miner-playground
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout polkadot-sdk
+        uses: actions/checkout@v4
+        # with:
+        #   repository: paritytech/polkadot-sdk
+
+      # - name: Install dependencies
+      #   run: sudo apt-get install -y protobuf-compiler
+
+      # - name: Install WASM toolchain
+      #   run: rustup target add wasm32-unknown-unknown
+
+      # - name: Install WASM toolchain
+      #   run: rustup component add rust-src
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@2
+
+      - name: build staking-miner-playground binary
+        run: |
+          cd staking-miner-playground
+          cargo build --release --features test-trimming
+          # sudo mv ./target/release/staking-miner-playground /usr/bin
+          ./target/release/staking-miner-playground --version
+
+      - name: upload staking-miner-playground binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-staking-miner-playground
+          path: target/release/staking-miner-playground
+          retention-days: 7
+          if-no-files-found: error
