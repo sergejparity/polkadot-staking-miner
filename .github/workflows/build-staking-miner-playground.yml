@@ -49,7 +49,7 @@ jobs:
       - name: upload staking-miner-playground binary
         uses: actions/upload-artifact@v3
         with:
-          name: nightly-staking-miner-playground
+          name: staking-miner-playground
           path: ./staking-miner-playground/target/release/staking-miner-playground
           retention-days: 7
           if-no-files-found: error
