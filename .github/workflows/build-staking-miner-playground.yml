@@ -9,8 +9,8 @@ on:
   # Allow it to be manually ran to rebuild binary when needed:
   workflow_dispatch: {}
   # Run at 22pm every week on Sunday's for nightly builds.
-  schedule:
-    - cron: "0 22 * * 6"
+  # schedule:
+  #   - cron: "0 22 * * 6"
 
 jobs:
   tests:
