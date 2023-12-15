@@ -35,6 +35,8 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
+          workspaces: |
+            staking-miner-playground
           cache-on-failure: true
 
       - name: build staking-miner-playground binary
