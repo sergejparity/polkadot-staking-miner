@@ -48,6 +48,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: nightly-staking-miner-playground
-          path: ./target/release/staking-miner-playground
+          path: ./staking-miner-playground/target/release/staking-miner-playground
           retention-days: 7
           if-no-files-found: error
