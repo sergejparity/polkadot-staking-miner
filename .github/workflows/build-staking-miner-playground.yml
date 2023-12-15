@@ -16,14 +16,15 @@ jobs:
   tests:
     name: Build staking-miner-playground
     runs-on: ubuntu-latest
+    container: paritytech/ci-unified:bullseye-1.74.0-2023-11-01-v20231204
     steps:
       - name: checkout polkadot-sdk
         uses: actions/checkout@v4
         # with:
         #   repository: paritytech/polkadot-sdk
 
-      - name: Install dependencies
-        run: sudo apt-get install -y protobuf-compiler
+      # - name: Install dependencies
+      #   run: sudo apt-get install -y protobuf-compiler
 
       # - name: Install WASM toolchain
       #   run: rustup target add wasm32-unknown-unknown
