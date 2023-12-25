@@ -44,7 +44,7 @@ jobs:
       - name: upload polkadot binary
         uses: actions/upload-artifact@v3
         with:
-          name: polkadot-nightly
+          name: nightly-polkadot-binary
           path: |
             ./target/release/polkadot
             ./target/release/polkadot-execute-worker
