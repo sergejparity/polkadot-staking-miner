@@ -4,25 +4,26 @@ runs:
   using: composite
   steps:
     - name: Download polkadot binaries
-      id: download-artifact
+      id: download-artifact-polkadot
       uses: dawidd6/action-download-artifact@268677152d06ba59fcec7a7f0b5d961b6ccd7e1e # v2.28.0
       with:
         workflow: build-polkadot.yml
         name: nightly-polkadot-binary
 
     - name: Download staking-miner-playground binary
-      id: download-artifact
+      id: download-artifact-smp
       uses: dawidd6/action-download-artifact@268677152d06ba59fcec7a7f0b5d961b6ccd7e1e # v2.28.0
       with:
         workflow: build-staking-miner-playground.yml
         name: staking-miner-playground-binary
 
     - name: Debug
+      shell: bash
       run: |
         ls -la
         # ls -la ~/.local/bin
 
-    - name: Prepare polkadot-node binary
+    - name: Prepare polkadot binary
       shell: bash
       run: |
         chmod u+x ./polkadot*
