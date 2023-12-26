@@ -27,7 +27,9 @@ runs:
     - name: Prepare polkadot binary
       shell: bash
       run: |
-        chmod u+x ./polkadot*
+        chmod u+x ./polkadot* ./staking-miner-playground
         ./polkadot --version
+        ./staking-miner-playground --version
         mkdir -p ~/.local/bin
-        cp ./polkadot* ~/.local/bin
+        mv ./polkadot* ~/.local/bin
+        mv ./staking-miner-playground ~/.local/bin

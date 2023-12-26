@@ -14,19 +14,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use substrate-node binary
+      - name: Get Polkadot and Staking Miner Playground binaries
         uses: ./.github/workflows/actions/build-binaries
-
-      # - name: Free space on the runner
-      #   run: |
-      #     df -h
-      #     sudo apt -y autoremove --purge
-      #     sudo apt -y autoclean
-      #     sudo rm -rf /usr/share/dotnet
-      #     sudo rm -rf /opt/ghc
-      #     sudo rm -rf "/usr/local/share/boost"
-      #     sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-      #     df -h
 
       - name: Cache Rust dependencies
         uses: swatinem/rust-cache@v2
@@ -34,27 +23,19 @@ jobs:
           key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
           cache-on-failure: true
 
+      # - name: Setup Polkadot and Staking Miner Playground binaries
+      #   run: |
+      #     ls -la
+      #     mkdir -p ~/.local/bin
+      #     sudo mv ./polkadot /usr/bin
+      #     sudo mv ./polkadot-execute-worker /usr/bin
+      #     sudo mv ./polkadot-prepare-worker /usr/bin
+      #     polkadot --version
+      #     sudo mv ./staking-miner-playground /usr/bin
+      #     staking-miner-playground --version
+
       - name: Run nightly tests
         run: |
-          ls -la
-          # sudo apt install -y protobuf-compiler
-          # rustup target add wasm32-unknown-unknown
-          # rustup component add rust-src
-          # git clone -b master --depth 1 https://github.com/paritytech/polkadot-sdk.git polkadot-sdk
-          # cd polkadot-sdk
-          # cargo build -p polkadot --release --features fast-runtime
-          # mkdir -p ~/.local/bin
-          # sudo mv ./target/release/polkadot /usr/bin
-          # sudo mv ./target/release/polkadot-execute-worker /usr/bin
-          # sudo mv ./target/release/polkadot-prepare-worker /usr/bin
-          # polkadot --version
-          # cd -
-          # rm -rf polkadot
-          # cd staking-miner-playground
-          # cargo build --release --features test-trimming
-          # sudo mv ./target/release/staking-miner-playground /usr/bin
-          # staking-miner-playground --version
-          # cd -
           RUST_LOG=info cargo test --workspace --all-features -- --nocapture
           # cargo clean
 
