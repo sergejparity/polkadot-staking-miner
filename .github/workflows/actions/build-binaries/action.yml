@@ -21,6 +21,7 @@ runs:
       shell: bash
       run: |
         ls -la
+        ls -la ./artifacts
         # ls -la ~/.local/bin
 
     - name: Prepare polkadot binary
