@@ -16,6 +16,7 @@ runs:
       with:
         workflow: build-staking-miner-playground.yml
         name: staking-miner-playground-binary
+        path: ./smp
 
     - name: Debug
       shell: bash
@@ -23,6 +24,8 @@ runs:
         ls -la
         ls -la ./artifacts
         ls -la ./staking-miner-playground
+        echo "-------------------"
+        ls -la smp
         # ls -la ~/.local/bin
 
     - name: Prepare polkadot binary
