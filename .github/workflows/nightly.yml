@@ -23,17 +23,6 @@ jobs:
           key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
           cache-on-failure: true
 
-      # - name: Setup Polkadot and Staking Miner Playground binaries
-      #   run: |
-      #     ls -la
-      #     mkdir -p ~/.local/bin
-      #     sudo mv ./polkadot /usr/bin
-      #     sudo mv ./polkadot-execute-worker /usr/bin
-      #     sudo mv ./polkadot-prepare-worker /usr/bin
-      #     polkadot --version
-      #     sudo mv ./staking-miner-playground /usr/bin
-      #     staking-miner-playground --version
-
       - name: Run nightly tests
         run: |
           RUST_LOG=info cargo test --workspace --all-features -- --nocapture
