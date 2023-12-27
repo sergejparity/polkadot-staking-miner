@@ -1,39 +1,28 @@
 name: Use polkadot and staking-miner-playground binaries
-description: Downloads and configures the polkadot binary built with build-polkadot
+description: Downloads and configures prebuilt Polkadot and Staking Miner Playground binaries
 runs:
   using: composite
   steps:
     - name: Download polkadot binaries
-      id: download-artifact-polkadot
-      uses: dawidd6/action-download-artifact@268677152d06ba59fcec7a7f0b5d961b6ccd7e1e # v2.28.0
+      uses: dawidd6/action-download-artifact@e7466d1a7587ed14867642c2ca74b5bcc1e19a2d # v3.0.0
       with:
         workflow: build-polkadot.yml
         name: nightly-polkadot-binary
+        path: ./tmp
 
     - name: Download staking-miner-playground binary
-      id: download-artifact-smp
-      uses: dawidd6/action-download-artifact@268677152d06ba59fcec7a7f0b5d961b6ccd7e1e # v2.28.0
+      uses: dawidd6/action-download-artifact@e7466d1a7587ed14867642c2ca74b5bcc1e19a2d # v3.0.0
       with:
         workflow: build-staking-miner-playground.yml
         name: staking-miner-playground-binary
         path: ./tmp
 
-    - name: Debug
-      shell: bash
-      run: |
-        ls -la
-        ls -la ./artifacts
-        ls -la ./staking-miner-playground
-        echo "-------------------"
-        ls -la ./tmp
-        # ls -la ~/.local/bin
-
     - name: Prepare polkadot binary
       shell: bash
       run: |
-        chmod u+x ./polkadot* ./tmp/staking-miner-playground
-        ./polkadot --version
+        chmod u+x ./tmp/polkadot* ./tmp/staking-miner-playground
+        ./tmp/polkadot --version
         ./tmp/staking-miner-playground --version
         mkdir -p ~/.local/bin
-        mv ./polkadot* ~/.local/bin
+        mv ./tmp/polkadot* ~/.local/bin
         mv ./tmp/staking-miner-playground ~/.local/bin
