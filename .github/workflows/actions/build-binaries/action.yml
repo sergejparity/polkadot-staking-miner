@@ -16,7 +16,7 @@ runs:
       with:
         workflow: build-staking-miner-playground.yml
         name: staking-miner-playground-binary
-        path: ./smp
+        path: ./tmp
 
     - name: Debug
       shell: bash
@@ -25,15 +25,15 @@ runs:
         ls -la ./artifacts
         ls -la ./staking-miner-playground
         echo "-------------------"
-        ls -la smp
+        ls -la ./tmp
         # ls -la ~/.local/bin
 
     - name: Prepare polkadot binary
       shell: bash
       run: |
-        chmod u+x ./polkadot* ./staking-miner-playground
+        chmod u+x ./polkadot* ./tmp/staking-miner-playground
         ./polkadot --version
-        ./staking-miner-playground --version
+        ./tmp/staking-miner-playground --version
         mkdir -p ~/.local/bin
         mv ./polkadot* ~/.local/bin
-        mv ./staking-miner-playground ~/.local/bin
+        mv ./tmp/staking-miner-playground ~/.local/bin
