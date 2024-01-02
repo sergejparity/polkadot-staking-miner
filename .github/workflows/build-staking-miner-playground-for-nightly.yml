@@ -1,4 +1,4 @@
-name: Build staking miner playground
+name: Build staking miner playground binary for nightly tests
 
 on:
   push:
